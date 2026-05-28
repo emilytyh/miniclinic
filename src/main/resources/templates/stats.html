@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>掛號統計 - MiniClinic</title>
+</head>
+<body>
+    <h1>掛號統計</h1>
+
+    <p>醫師總數：<span th:text="${doctorCount}"></span></p>
+    <p>病患總數：<span th:text="${patientCount}"></span></p>
+    <p>掛號總數：<span th:text="${appointmentCount}"></span></p>
+    <h2>各科別掛號數</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>科別</th>
+                <th>掛號數</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="entry : ${departmentCounts}">
+                <td th:text="${entry.key}">科別</td>
+                <td th:text="${entry.value}">0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <a th:href="@{/}">回首頁</a>
+        |
+        <a th:href="@{/appointments}">查看掛號記錄</a>
+    </p>
+</body>
+</html>

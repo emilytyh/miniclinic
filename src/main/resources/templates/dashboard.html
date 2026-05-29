@@ -67,8 +67,14 @@
 
                 <td>
                     <button th:if="${appt.status == 'BOOKED'}"
-                            th:data-id="${appt.apptId}"
-                            onclick="cancelAppointment(this)">取消</button>
+                            th:onclick="'cancelAppointment(' + ${appt.apptId} + ')'">
+                        取消
+                    </button>
+
+                    <button th:if="${appt.status == 'BOOKED'}"
+                            th:onclick="'completeAppointment(' + ${appt.apptId} + ')'">
+                        看診完成
+                    </button>
                 </td>
             </tr>
         </tbody>
@@ -99,6 +105,25 @@
                 location.reload();
             } else {
                 alert("取消失敗");
+            }
+        });
+    }
+
+    function completeAppointment(id) {
+        fetch('/api/appointments/' + id + '/status', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                status: 'COMPLETED'
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('更新失敗');
             }
         });
     }

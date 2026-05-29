@@ -4,16 +4,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import tw.edu.fju.miniclinic.model.Appointment;
 import tw.edu.fju.miniclinic.model.AppointmentRepository;
 import tw.edu.fju.miniclinic.model.DoctorRepository;
 import tw.edu.fju.miniclinic.model.PatientRepository;
 
-@Controller
+@RestController
 public class StatsController {
 
     @Autowired
@@ -25,22 +23,34 @@ public class StatsController {
     @Autowired
     private AppointmentRepository appointmentRepo;
 
-    @GetMapping("/stats")
-    public String stats(Model model) {
-        Map<String, Long> departmentCounts = new TreeMap<>();
+    @GetMapping("/api/stats")
+    public Map<String, Object> stats() {
 
-        for (Appointment appt : appointmentRepo.findAll()) {
-            String department = appt.getDoctor().getDepartment();
-            departmentCounts.put(
-                    department,
-                    departmentCounts.getOrDefault(department, 0L) + 1);
-        }
+        Map<String, Object> result = new TreeMap<>();
 
-        model.addAttribute("doctorCount", doctorRepo.count());
-        model.addAttribute("patientCount", patientRepo.count());
-        model.addAttribute("appointmentCount", appointmentRepo.count());
-        model.addAttribute("departmentCounts", departmentCounts);
+        result.put("totalDoctors", doctorRepo.count());
+        result.put("totalPatients", patientRepo.count());
+        result.put("totalAppointments", appointmentRepo.count());
 
-        return "stats";
+        Map<String, Long> byStatus = new TreeMap<>();
+
+        byStatus.put(
+            "BOOKED",
+            appointmentRepo.countByStatus("BOOKED")
+        );
+
+        byStatus.put(
+            "COMPLETED",
+            appointmentRepo.countByStatus("COMPLETED")
+        );
+
+        byStatus.put(
+            "CANCELLED",
+            appointmentRepo.countByStatus("CANCELLED")
+        );
+
+        result.put("byStatus", byStatus);
+
+        return result;
     }
 }
